@@ -32,7 +32,7 @@
    
   (define (list-minus-element-n x n)
       (cond ((= n 0) (cdr x)) ; checks n to return cdr
-            (else (cons (car x)(car x)(list-minus-element-n (cdr x)(- n 1))) ;finds and removes
+            (else (cons (car x)(list-minus-element-n (cdr x)(- n 1))) ;finds and removes
             )
         )
     )
