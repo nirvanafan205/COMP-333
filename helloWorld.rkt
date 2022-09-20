@@ -25,7 +25,7 @@
    
  (define (list-element-n x n)
     (cond ((= n 0) (car x)) ;checks n to return
-          (else (list-element-n (cdr x)(- n1)) ;finds element
+          (else (list-element-n (cdr x)(- n 1)) ;finds element
           )
        )
    )
