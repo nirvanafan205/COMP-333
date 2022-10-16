@@ -2,16 +2,7 @@
 
 (struct node (value count left right) #:mutable #:transparent)
 
-(define n10 (node 70 1 null null)) 
-(define n09 (node 65 1 null n10)) 
-(define n08 (node 30 1 null null)) 
-(define n07 (node 87 1 null null)) 
-(define n06 (node 60 1 null n09)) 
-(define n05 (node 37 1 n08 null)) 
-(define n04 (node 57 1 null null)) 
-(define n03 (node 75 1 n06 n07)) 
-(define n02 (node 25 1 n04 n05)) 
-(define n01 (node 50 1 n02 n03)) 
+
 
 ;excercise 1
 (define (bst? n)
@@ -47,12 +38,14 @@
               (node-value n)) )
            ) #t
 
-           
+      
 
      ;and check-L < current-N
      ;and bst? check-L 
 
-     )))
+     )
+     (else #f)
+     ))
 
 
 
@@ -72,25 +65,25 @@
     ( (and (< v (node-value n ) ) ;checks i v is less than node-value n
           (not (empty? (node-left n) )))  ;checks to make sure node-left is not empty
 
-           (append (list n)  (find-path (node-left n)  v) ) ;appends and recursively calls
+           (append (find-path (node-left n)  v) (list n) ) ;appends and recursively calls
                )
 
-    ( (> v (node-value n)) ; checks v greater than current node value
-          (and (empty? (node-right n) ) ) ;checks right node is empty
+    ( (and (> v (node-value n)) ; checks v greater than current node value
+          (and (empty? (node-right n) ) ) );checks right node is empty
           (list n)) ;return list
 
-    ( (> v (node-value n))
-          ((not (empty? (node-right n) ) )
-           (append (list n) (find-path (node-right n) ) 
-           )))
-))  
-(find-path n01 5)
+    ( (and (> v (node-value n))
+          (not (empty? (node-right n) ) ))
+           (append (find-path (node-right n) v) (list n)  
+           ))
+    )
+)  
 
 (define (node-list-to-value-list x)
   (cond
-    ((empty? x ) '() )
+    ((empty? x) '())
     
-  (cons (node-value (car x) ) (node-list-to-value-list (cdr x)))
+    ((cons (node-value (car x) ) (node-list-to-value-list (cdr x))))
   
     ) )
 
@@ -101,11 +94,11 @@
   (cond
     ((empty? n) '() )
 
-    (else (append ( traverse (node-value (node-left n) ) )
-                  ((list n)
-                  (traverse (node-value (node-right n) ) )
+    (else (append (traverse (node-left n)) 
+                  (list n)
+                  (traverse (node-right n) )
                   ))))
-  )
+  
 
 (define (inorder? x)
   (cond
@@ -119,14 +112,80 @@
 ))
 
 (define (insert n v)
+  
   (let ((stack(find-path n v)))
     (cond
       
       ((empty? stack) ;checks for empty stack
        (node v 1 null null) ;creates new node
-       n ))
+       n )
 
-       (((= (v (node-value (car stack) ) ;checks if v is equal to value of head of stack
-            (+ (node-count (car stack))) ) ;increments count of v           
-              )))) )
+       ((= (v (node-value (car stack) ))) ;checks if v is equal to value of head of stack
+            (+ (node-count (car stack))) ) ;increments count of v
+
+       ((< (v (node-value (car stack) ))) ;checks that v is less then the value of head of stack
+           (set-node-left! (car stack) (node v 1 null (node-left (car stack)))) n ) ;create new node for value v, make it left child
+
+       ((set-node-right! (car stack) (node v 1(node-right (car stack)) null ) ) n)
+       
+       )))
+
+       ; of head of stack
+
+       ; new node for value v is made
+                                                              ; made it the right child of head of stack
+
+
+
                
+;--------------------
+;TESTS
+;--------------------
+(define-namespace-anchor anc)
+(define ns (namespace-anchor->namespace anc))
+(define n10 (node 70 1 null null))
+(define n09 (node 65 1 null n10))
+(define n08 (node 30 1 null null))
+(define n07 (node 87 1 null null))
+(define n06 (node 60 1 null n09))
+(define n05 (node 37 1 n08 null))
+(define n04 (node 12 1 null null))
+(define n03 (node 75 1 n06 n07))
+(define n02 (node 25 1 n04 n05))
+(define n01 (node 50 1 n02 n03))
+(define nodelist-01 '(n01 n02 n03 n04 n05 n06 n07 n08 n09 n10))
+
+;-----EXERCISE 1-----
+
+;(bst? n01)        ;Check if the node is a bst
+;(node? n10)      ;True if there, false otherwise
+;(node-value n10) ;Return the value at that node
+;(node-count n01) ;Number of duplicates
+;(node-list-to-value-list (find-path n01 38))
+;(map (lambda (x) (bst? (eval x ns))) nodelist-01)
+;(map (lambda (x) (node-list-to-value-list (find-path n01 (node-value (eval x ns))))) nodelist-01)
+(define bn05 (node 10 1 null null))
+(define bn04 (node 50 1 null bn05))
+;(bst? bn05) ; #t
+;(bst? bn04) ; #f
+
+;------EXERCISE 2 TEST---------
+;(traverse n01)
+;(node-list-to-value-list (traverse n01))
+;(inorder? (traverse n01))
+(define bst-01 '())
+(define list-01 '(963 216 556 571 946 253 892 48 87 939))
+;(map (lambda (x) (set! bst-01 (insert bst-01 x))(node-list-to-value-list (traverse bst-01))) list-01)
+
+;(define t '())
+;(node-list-to-value-list (traverse t))
+;(set! t (insert t 50))
+;(node-list-to-value-list (traverse t))
+;(set! t (insert t 25))
+;(node-list-to-value-list (traverse t))
+;(set! t (insert t 20))
+;(node-list-to-value-list (traverse t))
+;(define bst-03 '()) ; empty BST bst-03
+;(define list-03 (random-list 200 1000)) ; list of 200 random numbers
+;(map (lambda (x) (set! bst-03 (insert bst-03 x))) list-03) ; add random numbers to tree
+;(node-list-to-value-list (traverse bst-03)) ; display final tree
